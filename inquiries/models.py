@@ -31,7 +31,7 @@ class AcademicRequests(models.Model):
     request_date = models.DateTimeField(auto_now_add=True, help_text="Date and time when the request was made")
     receiver = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='received_academic_requests', help_text="Sending to...")
     sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_academic_requests', help_text="Sent By...", default=None)
-    reply =  models.TextField(max_length=2000, help_text="Enter a response to the Academic Request Above")
+    reply =  models.TextField(max_length=2000, help_text="Enter a response to the Academic Request Above", default="No Response Yet...")
 
 
     def __str__(self):

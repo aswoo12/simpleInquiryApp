@@ -25,7 +25,7 @@
                                         <th>Request Date</th>
                                         {% if user.is_student %}
                                             <th>Sent To</th>
-                                        {% elif user.is_facilitator %}
+                                        {% elif user.is_facilitator or user.is_teamlead %}
                                             <th>Received From</th>
                                         {% endif %}
                                         <th class="text-center">Actions</th>
@@ -38,7 +38,7 @@
                                             <td>{{ academic_request.request_date }}</td>
                                             {% if user.is_student %}
                                                 <td>{{ academic_request.receiver }}</td>
-                                            {% elif user.is_facilitator %}
+                                            {% elif user.is_facilitator or user.is_teamlead %}
                                                 <td>{{ academic_request.sender }}</td>
                                             {% endif %}                                            
                                             <td class="text-center">
@@ -46,6 +46,8 @@
                                                 <a href="{% url 'academicrequests-update' academic_request.pk %}" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i> Edit </a>
                                                 {% elif user.is_facilitator %}
                                                 <a href="{% url 'academicrequests-update' academic_request.pk %}" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i> Respond </a>
+                                                {% elif user.is_teamlead %}
+                                                <a href="{% url 'academicrequests-update' academic_request.pk %}" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i> More Info... </a>
                                                 {% endif %}
                                                 <a href="{% url 'academicrequests-delete' academic_request.pk %}" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i> Delete </a>
                                             </td>

@@ -36,8 +36,8 @@ class AcademicRequestsCreateView(CreateView):
 
         # Check if the user is a student
         if self.request.user.is_student():
-            # Make the 'reply' field read-only for students
-            form.fields['reply'].widget.attrs['disabled'] = True
+            # Make the 'reply' field read-only for students so that the field can still be submitted
+            form.fields['reply'].widget.attrs['readonly'] = True
 
         return form
 
@@ -59,9 +59,9 @@ class AcademicRequestsUpdateView(UpdateView):
         form = super().get_form(form_class)
 
         # Check if the user is a student
-        if self.request.user.is_student():
-            # Make the 'reply' field read-only for students
-            form.fields['reply'].widget.attrs['disabled'] = True
+        if self.request.user.is_student() or self.request.user.is_teamlead():
+            # Make the 'reply' field read-only for students and teamleads, so that the field can still be submitted
+            form.fields['reply'].widget.attrs['readonly'] = True
 
         return form
 
@@ -102,15 +102,17 @@ class AcademicRequestsDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Delete Academic Request'
-        # Retrieves the name of the course we want to delete 
-        academic_request_subject = AcademicRequests.objects.get(pk=self.kwargs.get('pk')).name
-        context['message'] = f'Are you sure you want to delete the course "{academic_request_subject}"'
-        # Display a cancel button on confirmation page and if pressed, return use to the courses list
+        # Retrieves the subject of the academicrequest we want to delete
+        academic_request_subject = AcademicRequests.objects.get(pk=self.kwargs.get('pk')).subject
+        context['message'] = f'Are you sure you want to delete this academic request : "{academic_request_subject}"'
+        # Display a cancel button on confirmation page and if pressed, return user to the academicrequests list
         context['cancel_url'] = 'academicrequests-list'
         return context 
     
 
 #-------------------------------------------------------------------------------------------------------------------------------
+
+# Administrative Requests Views 
 
 class AdministrativeRequestsCreateView(CreateView):
     model = AdministrativeRequests
@@ -131,6 +133,16 @@ class AdministrativeRequestsCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['table_title'] = 'Add New Administrative Request'
         return context
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        # Check if the user is a student
+        if self.request.user.is_student():
+            # Make the 'reply' field read-only for students so that the field can still be submitted
+            form.fields['reply'].widget.attrs['readonly'] = True
+
+        return form
 
 class AdministrativeRequestsUpdateView(UpdateView):
     model = AdministrativeRequests
@@ -150,8 +162,8 @@ class AdministrativeRequestsUpdateView(UpdateView):
 
         # Check if the user is a student
         if self.request.user.is_student():
-            # Make the 'reply' field read-only for students
-            form.fields['reply'].widget.attrs['disabled'] = True
+            # Make the 'reply' field read-only for students so that the field can still be submitted
+            form.fields['reply'].widget.attrs['readonly'] = True
 
         return form
 
@@ -164,7 +176,22 @@ class AdministrativeRequestsListView(LoginRequiredMixin,ListView):
     paginate_by = 5
     
     def get_queryset(self):
-        return AdministrativeRequests.objects.filter(sender=self.request.user)
+        
+       # Get the currently logged-in user
+        user = self.request.user
+
+        # If the user is a facilitator, filter administrative requests sent by the facilitator
+        if user.is_facilitator():
+            return AdministrativeRequests.objects.filter(sender=user)
+
+        # If the user is a student, filter administrative requests sent by the student
+        elif user.is_student():
+            return AdministrativeRequests.objects.filter(sender=user)
+        
+        elif user.is_teamlead:
+            # If the user is a team lead, return all administrative requests
+            return AdministrativeRequests.objects.all()
+        
     
 class AdministrativeRequestsDeleteView(DeleteView):
     model = AdministrativeRequests
@@ -175,11 +202,13 @@ class AdministrativeRequestsDeleteView(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Delete Administrative Request'
-        # Retrieves the name of the course we want to delete 
-        administration_request_subject = AdministrativeRequests.objects.get(pk=self.kwargs.get('pk')).name
-        context['message'] = f'Are you sure you want to delete this "{administration_request_subject}"'
-        # Display a cancel button on confirmation page and if pressed, return use to the courses list
+        context['title'] = 'Delete Administrative Request'   
+             
+        # Retrieves the subject of the administrativerequest we want to delete
+        administration_request_subject = AdministrativeRequests.objects.get(pk=self.kwargs.get('pk')).subject
+        context['message'] = f'Are you sure you want to delete this Administrative Request : "{administration_request_subject}" ?'
+        
+        # Display a cancel button on confirmation page and if pressed, return user to the academicrequests list
         context['cancel_url'] = 'administrativerequests-list'
         return context 
     

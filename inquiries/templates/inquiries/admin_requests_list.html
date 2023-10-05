@@ -23,7 +23,11 @@
                                     <tr>
                                         <th>Subject</th>
                                         <th>Request Date</th>
-                                        <th>Sent To</th>
+                                        {% if user.is_teamlead %}
+                                        <th> Received From </th>
+                                        {% else %}
+                                        <th> Sent To </th>
+                                        {% endif %}
                                         <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
@@ -32,10 +36,20 @@
                                         <tr>
                                             <td>{{ administrative_request.subject }}</td>
                                             <td>{{ administrative_request.request_date }}</td>
+                                            {% if user.is_teamlead %}
+                                            <td>{{ administrative_request.sender}}</td>
+                                            {% else %}
                                             <td>{{ administrative_request.receiver}}</td>
+                                            {% endif %}
                                             <td class="text-center">
                                                 <!-- Add any actions or links for administrative requests here -->
+                                                {% if user.is_student or user.is_facilitator %}
+                                                <a href="{% url 'administrativerequests-update' administrative_request.pk %}" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i> Edit </a>
+                                                {% elif user.is_teamlead %}
                                                 <a href="{% url 'administrativerequests-update' administrative_request.pk %}" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i> Respond </a>
+
+                                                {% endif %}
+
                                                 <a href="{% url 'administrativerequests-delete' administrative_request.pk %}" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i> Delete </a>
                                             </td>
                                         </tr>

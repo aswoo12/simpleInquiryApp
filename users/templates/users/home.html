@@ -1,0 +1,25 @@
+{% extends "users/base.html" %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="card">
+                    <div class="card-body">
+                        {% if user.is_student %}
+                            <h3 class="card-title">Welcome to the Student Home Page</h3>
+                            <p class="card-text">Where your inquiries are heard.</p>
+                        {% elif user.is_facilitator %}
+                            <h3 class="card-title">Welcome to the Facilitators' Home Page</h3>
+                            <p class="card-text">Where we bring you closer to your students' worries.</p>
+                        {% elif user.is_teamlead %}
+                            <h3 class="card-title">Welcome to the Team Lead Page</h3>
+                        {% else %}
+                            <h3 class="card-title">Welcome to Inquire Application</h3>
+                            <p class="card-text">This is the content of your home page.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -19,7 +19,7 @@ def registration(request):
                 user.set_password(password1)
                 user.save()
                 
-                messages.success(request, f'Your Account has been created!{username}, You are now able to log in')
+                messages.success(request, f'Your Account has been created {username} ! Proceed to log in')
                 return redirect('login')  # Redirect to the login page
             else:
                 # Handle password mismatch error here

@@ -180,7 +180,7 @@ class AdministrativeRequestsListView(LoginRequiredMixin,ListView):
        # Get the currently logged-in user
         user = self.request.user
 
-        # If the user is a facilitator, filter administrative requests sent by the facilitator
+        # If the user is a facilitator, filter administrative requests sent by all students
         if user.is_facilitator():
             return AdministrativeRequests.objects.filter(sender=user)
 
@@ -188,7 +188,7 @@ class AdministrativeRequestsListView(LoginRequiredMixin,ListView):
         elif user.is_student():
             return AdministrativeRequests.objects.filter(sender=user)
         
-        elif user.is_teamlead:
+        elif user.is_teamlead():
             # If the user is a team lead, return all administrative requests
             return AdministrativeRequests.objects.all()
         
